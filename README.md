@@ -67,3 +67,5 @@ Recommendation:
 2.Ideal steps for maintaining good life style is 10000,so notify users how many steps recommended and keep reminding them to walk on regular basis.At the end of the day encourage users by giving badges on their achievement.
 
 3.Drinking water is essential for good health,so keep notifying users on regular intervals to drink water.
+
+Tableau public link -  https://public.tableau.com/app/profile/asha7854/viz/Bellabeatcasestudy_166738084 13030/Story1?publish=yes  
