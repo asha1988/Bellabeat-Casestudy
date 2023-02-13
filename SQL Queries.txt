@@ -1,0 +1,82 @@
+1. Find out how active are the users by calculating average steps and total distance on an average
+
+SELECT
+  Id,
+  AVG(TotalSteps) AS Avg_steps,
+  AVG(TotalDistance) AS Avg_Distance
+FROM `sigma-crow-312622.fitbit_fitness_data.dailyActivity_merged` 
+GROUP By
+Id
+
+(This shows that on an average users steps were counted between 5k to 12k and their average distance covered is 5km to 10km's.)
+
+2.What percentage of users reach goal of 10000?
+verify number of users  reaching goal of 10000 steps
+
+SELECT
+  Id,
+  AVG(StepTotal),
+  CASE
+    WHEN AVG(StepTotal) >= 10000 THEN 'Goal Reached'
+    WHEN AVG(StepTotal) < 10000 THEN 'Goal Not Reached'
+  END Meet10kGoal  
+FROM `sigma-crow-312622.fitbit_fitness_data.dailySteps_merged`
+GROUP BY Id 
+
+(The result shows that 80% of users are not reaching 10000 steps goal.)
+
+3.Relationship between calories and total number of steps.
+
+SELECT 
+  cal.Id,cal.ActivityDay as Date,cal.Calories,step.StepTotal
+FROM `sigma-crow-312622.fitbit_fitness_data.dailyCalories_merged` AS cal
+JOIN
+  `sigma-crow-312622.fitbit_fitness_data.dailySteps_merged` AS step
+ON
+  cal.Id = step.Id
+  AND cal.ActivityDay = step.ActivityDay
+
+(The more daily step means more calories burnt,which shows relation to active time spent.)
+
+4.More active minutes spent and more active distance covered results in more calories burnt.
+
+SELECT
+  A.Id,A.ActivityDate,
+  C.Calories,
+ (I.VeryActiveMinutes + I.LightlyActiveMinutes + I.FairlyActiveMinutes) AS Total_active_minutes,
+  (I.LightActiveDistance + I.ModeratelyActiveDistance + I.VeryActiveDistance) AS Total_active_distance
+FROM `sigma-crow-312622.fitbit_fitness_data.dailyActivity_merged` AS A
+LEFT JOIN
+  `sigma-crow-312622.fitbit_fitness_data.dailyCalories_merged` AS C
+ON
+  A.Id = C.Id
+  AND A.ActivityDate = C.ActivityDay
+  AND A.Calories = C.Calories
+INNER JOIN
+  `sigma-crow-312622.fitbit_fitness_data.dailyIntensities_merged` AS I
+ 
+ON
+  A.Id = I.Id
+  AND A.LightlyActiveMinutes = I.LightlyActiveMinutes
+  AND A.VeryActiveMinutes = I.VeryActiveMinutes
+  AND A.FairlyActiveMinutes = I.FairlyActiveMinutes
+  AND A.LightActiveDistance = I.LightActiveDistance
+  AND A.VeryActiveDistance = I.VeryActiveDistance
+  AND A.ModeratelyActiveDistance = I.ModeratelyActiveDistance
+
+The active time spent and calories burnt,total steps,total distance covered are directly related in maintaining good weight and quality sleep.
+SELECT
+  A.Id 
+  ,A.ActivityDate,
+  A.Calories,
+  A.TotalDistance,
+  (A.LightlyActiveMinutes + A.VeryActiveMinutes + A.FairlyActiveMinutes) AS Total_active_minutes,
+  A.TotalSteps,
+  W.BMI
+
+FROM `sigma-crow-312622.fitbit_fitness_data.dailyActivity_merged` AS A
+JOIN
+  `sigma-crow-312622.fitbit_fitness_data.weightLogInfo_merged` AS W
+ON
+  A.Id = W.Id
+  AND A.ActivityDate = CAST(W.Date AS DATE)
